@@ -1,0 +1,47 @@
+﻿@model InventoryItem
+
+<div class="container mt-4">
+    <div class="card shadow-lg" style="border-radius: 12px; max-width: 600px; margin: auto;">
+
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">📦 Create Inventory Product</h4>
+        </div>
+
+        <div class="card-body">
+            <form method="post">
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Product ID (GUID)</label>
+                    <input asp-for="ProductId" class="form-control" placeholder="Enter GUID or leave empty to auto-generate" />
+                    <span class="text-danger small">@Html.ValidationMessageFor(m => m.ProductId)</span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Name</label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter product name" />
+                    <span class="text-danger small">@Html.ValidationMessageFor(m => m.Name)</span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Price</label>
+                    <input asp-for="Price" class="form-control" placeholder="Enter price" />
+                    <span class="text-danger small">@Html.ValidationMessageFor(m => m.Price)</span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Current Stock</label>
+                    <input asp-for="CurrentStock" class="form-control" placeholder="Enter current stock" />
+                    <span class="text-danger small">@Html.ValidationMessageFor(m => m.CurrentStock)</span>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2" style="border-radius: 8px;">
+                    Create Product
+                </button>
+
+                <div class="mt-3 text-danger text-center">
+                    @Html.ValidationSummary()
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

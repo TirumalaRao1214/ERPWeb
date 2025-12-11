@@ -1,0 +1,92 @@
+﻿@model List<InventoryItem>
+
+<style>
+    .erp-card {
+        border-radius: 8px;
+        border: 1px solid #e3e6ea;
+    }
+
+    .erp-header {
+        background: linear-gradient(90deg, #1f4e79, #2f6fa7);
+        color: #fff;
+        padding: 14px 20px;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .erp-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .erp-table thead {
+        background-color: #f4f6f9;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .erp-table tbody tr:hover {
+        background-color: #f1f7ff;
+        cursor: pointer;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="erp-card shadow-sm">
+
+        <!-- Header -->
+        <div class="erp-header d-flex justify-content-between align-items-center">
+            <span class="erp-title">📦 Inventory Management</span>
+
+            <div>
+                <a asp-controller="Inventory" asp-action="Create" class="btn btn-light btn-sm fw-bold">
+                    ➕ Add Product
+                </a>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table erp-table table-bordered mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 40%">Product Name</th>
+                        <th style="width: 20%">Price</th>
+                        <th style="width: 20%">Stock</th>
+                        <th style="width: 20%">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@item.Name</td>
+
+                            <td class="text-primary fw-bold">
+                                ₹ @item.Price
+                            </td>
+
+                            <td>
+                                <span class="badge
+                                        @(item.CurrentStock > 20 ? "bg-success" :
+                                                                            item.CurrentStock > 5 ? "bg-warning" : "bg-danger")">
+                                @item.CurrentStock
+                            </span>
+                        </td>
+
+                            <td>
+                                <a asp-controller="Inventory" asp-action="Edit" asp-route-id="@item.ProductId"
+                                   class="btn btn-outline-primary btn-sm">Edit</a>
+
+                                <a asp-controller="Inventory" asp-action="Delete" asp-route-id="@item.ProductId"
+                                   class="btn btn-outline-danger btn-sm">Delete</a>
+                            </td>
+                        </tr>
+                                        }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

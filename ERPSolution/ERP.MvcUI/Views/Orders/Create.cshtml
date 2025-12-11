@@ -1,0 +1,222 @@
+﻿@model CreateOrderViewModel
+
+<div class="container mt-4">
+    <div class="erp-card shadow-sm">
+
+        <!-- Header -->
+        <div class="erp-header d-flex justify-content-between align-items-center">
+            <span class="erp-title">🧾 Create Sales Order</span>
+        </div>
+
+        <form method="post">
+            <table class="table erp-table table-bordered mt-3">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 35%">Product</th>
+                        <th style="width: 15%">Qty</th>
+                        <th style="width: 20%">Price (₹)</th>
+                        <th style="width: 20%">Line Total (₹)</th>
+                        <th style="width: 10%">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="order-items">
+                    @for (int i = 0; i < Model.Items.Count; i++)
+                    {
+                        <tr>
+                            <!-- PRODUCT -->
+                            <td>
+                                <select name="Items[@i].ProductId"
+                                        class="form-select"
+                                        onchange="updatePrice(this, @i)">
+                                    <option value="">-- Select Product --</option>
+
+                                    @foreach (var p in Model.Products)
+                                    {
+                                        <option value="@p.ProductId"
+                                                data-price="@p.Price"
+                                                data-stock="@p.CurrentStock">
+                                            @p.Name (Stock: @p.CurrentStock)
+                                        </option>
+                                    }
+                                </select>
+                            </td>
+
+                            <!-- QTY -->
+                            <td>
+                                <input type="number"
+                                       name="Items[@i].Qty"
+                                       class="form-control"
+                                       min="1"
+                                       value="1"
+                                       oninput="calculateRow(@i)" />
+                            </td>
+
+                            <!-- PRICE -->
+                            <td>
+                                <input type="number"
+                                       name="Items[@i].Price"
+                                       class="form-control"
+                                       step="0.01"
+                                       value="0"
+                                       oninput="calculateRow(@i)" />
+                            </td>
+
+                            <!-- LINE TOTAL -->
+                            <td>
+                                <input type="text"
+                                       name="LineTotal[@i]"
+                                       class="form-control"
+                                       value="0"
+                                       readonly />
+                            </td>
+
+                            <!-- REMOVE ROW -->
+                            <td class="text-center">
+                                <button type="button"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="removeRow(this)">
+                                    ✖
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between mb-3">
+                <button type="button"
+                        class="btn btn-outline-primary"
+                        onclick="addRow()">➕ Add Item</button>
+
+                <h4 class="fw-bold">Grand Total: ₹ <span id="grand-total">0</span></h4>
+            </div>
+
+            <button type="submit" class="btn btn-primary float-end px-4">💾 Submit Order</button>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    // -----------------------
+    // AUTO-FILL PRICE + STOCK
+    // -----------------------
+    function updatePrice(select, index) {
+        let price = select.options[select.selectedIndex].getAttribute("data-price");
+        let stock = select.options[select.selectedIndex].getAttribute("data-stock");
+
+        // Set price
+        document.querySelector(`input[name="Items[${index}].Price"]`).value = price;
+
+        // Set stock as max quantity
+        let qtyInput = document.querySelector(`input[name="Items[${index}].Qty"]`);
+        qtyInput.setAttribute("max", stock);
+
+        calculateRow(index);
+    }
+
+    // -----------------------
+    // CALCULATE ROW + VALIDATE STOCK
+    // -----------------------
+    function calculateRow(index) {
+        let qtyInput = document.querySelector(`input[name="Items[${index}].Qty"]`);
+        let qty = parseInt(qtyInput.value);
+        let maxStock = parseInt(qtyInput.getAttribute("max")) || 999999;
+
+        let price = parseFloat(document.querySelector(`input[name="Items[${index}].Price"]`).value) || 0;
+
+        // STOCK VALIDATION
+        if (qty > maxStock) {
+            alert(`Only ${maxStock} units available in stock!`);
+            qty = maxStock;
+            qtyInput.value = qty;
+        }
+
+        let total = qty * price;
+
+        // Set line total
+        document.querySelector(`input[name="LineTotal[${index}]"]`).value = total.toFixed(2);
+
+        calculateGrandTotal();
+    }
+
+    // -----------------------
+    // GRAND TOTAL
+    // -----------------------
+    function calculateGrandTotal() {
+        let totals = document.querySelectorAll("input[name^='LineTotal']");
+        let sum = 0;
+
+        totals.forEach(t => sum += parseFloat(t.value) || 0);
+
+        document.getElementById("grand-total").textContent = sum.toFixed(2);
+    }
+
+    // -----------------------
+    // ADD NEW ROW WITH STOCK SUPPORT
+    // -----------------------
+    function addRow() {
+        const table = document.getElementById("order-items");
+        const index = table.rows.length;
+
+        const products = @Html.Raw(
+            Newtonsoft.Json.JsonConvert.SerializeObject(
+                Model.Products.Select(p => new {
+                    id = p.ProductId,
+                    name = p.Name,
+                    price = p.Price,
+                    stock = p.CurrentStock
+                })
+            )
+        );
+
+        let productOptions = `<option value="">-- Select Product --</option>`;
+        products.forEach(p => {
+            productOptions += `<option value="${p.id}" data-price="${p.price}" data-stock="${p.stock}">
+                                ${p.name} (Stock: ${p.stock})
+                               </option>`;
+        });
+
+        const newRow = `
+        <tr>
+            <td>
+                <select name="Items[${index}].ProductId" class="form-select"
+                        onchange="updatePrice(this, ${index})">
+                    ${productOptions}
+                </select>
+            </td>
+
+            <td>
+                <input type="number" name="Items[${index}].Qty" class="form-control"
+                       min="1" value="1" oninput="calculateRow(${index})" />
+            </td>
+
+            <td>
+                <input type="number" name="Items[${index}].Price"
+                       class="form-control" step="0.01" value="0"
+                       oninput="calculateRow(${index})" />
+            </td>
+
+            <td>
+                <input type="text" name="LineTotal[${index}]"
+                       class="form-control" value="0" readonly />
+            </td>
+
+            <td class="text-center">
+                <button type="button" class="btn btn-danger btn-sm"
+                        onclick="removeRow(this)">✖</button>
+            </td>
+        </tr>`;
+
+        table.insertAdjacentHTML("beforeend", newRow);
+    }
+
+    // -----------------------
+    // REMOVE ROW
+    // -----------------------
+    function removeRow(btn) {
+        btn.closest("tr").remove();
+        calculateGrandTotal();
+    }
+</script>

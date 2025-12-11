@@ -1,0 +1,6 @@
+@ERP.Microservices_HostAddress = http://localhost:5113
+
+GET {{ERP.Microservices_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,126 @@
+﻿@model List<Order>
+
+<h2>Sales Orders</h2>
+
+
+
+<style>
+    .erp-card {
+        border-radius: 8px;
+        border: 1px solid #e3e6ea;
+    }
+
+    .erp-header {
+        background: linear-gradient(90deg, #1f4e79, #2f6fa7);
+        color: #fff;
+        padding: 14px 20px;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .erp-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .erp-table thead {
+        background-color: #f4f6f9;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .erp-table tbody tr:hover {
+        background-color: #f1f7ff;
+        cursor: pointer;
+    }
+
+    .order-row {
+        background: #ffffff;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="erp-card shadow-sm">
+
+        <!-- Header -->
+        <div class="erp-header d-flex justify-content-between align-items-center">
+            <span class="erp-title">🧾 Sales Orders</span>
+
+            <div>
+                <a asp-controller="Orders" asp-action="Create" class="btn btn-light btn-sm fw-bold">
+                    ➕ Create Order
+                </a>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table erp-table table-bordered mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 30%">Order ID</th>
+                        <th style="width: 20%">Created At</th>
+                        <th style="width: 20%">Total Amount (₹)</th>
+                        <th style="width: 30%">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr class="order-row">
+                            <td class="fw-semibold">@order.OrderId</td>
+
+                            <td>
+                                @order.CreatedAt.ToString("dd-MMM-yyyy hh:mm tt")
+                            </td>
+
+                            <td class="text-primary fw-bold">
+                                ₹ @order.TotalAmount
+                            </td>
+
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#items-@order.OrderId">
+                                    View Items
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Collapsible Items Section -->
+                        <tr id="items-@order.OrderId" class="collapse bg-light">
+                            <td colspan="4">
+                                <table class="table table-sm table-bordered mt-2">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Item ID</th>
+                                            <th>Product ID</th>
+                                            <th>Qty</th>
+                                            <th>Price (₹)</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @foreach (var item in order.Items)
+                                        {
+                                            <tr>
+                                                <td>@item.ItemId</td>
+                                                <td>@item.ProductId</td>
+                                                <td>@item.Qty</td>
+                                                <td>@item.Price</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+

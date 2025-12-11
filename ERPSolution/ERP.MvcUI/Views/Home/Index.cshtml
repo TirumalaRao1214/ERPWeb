@@ -1,0 +1,21 @@
+﻿@model DashboardViewModel
+
+
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+
+<div class="card">
+    <h4>Total Products: @Model.Inventory.TotalProducts</h4>
+</div>
+
+<div class="card">
+    <h4>Today Sales: @Model.Sales.TodaySales</h4>
+</div>
+
+<div class="card">
+    <h4>Pending GRN: @Model.Purchase.PendingGRN</h4>
+</div>

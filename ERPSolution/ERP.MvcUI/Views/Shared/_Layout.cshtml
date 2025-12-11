@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ERP</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <style>
+        /* Sidebar */
+        .erp-sidebar {
+            width: 240px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: #2c3e50;
+            padding-top: 65px;
+            color: white;
+        }
+
+            .erp-sidebar a {
+                color: #ecf0f1;
+                padding: 12px 20px;
+                display: block;
+                text-decoration: none;
+            }
+
+                .erp-sidebar a:hover,
+                .erp-sidebar .active {
+                    background: #1abc9c;
+                    color: #fff;
+                }
+
+        /* Top Navbar */
+        .erp-navbar {
+            position: fixed;
+            left: 240px;
+            right: 0;
+            top: 0;
+            height: 60px;
+            background: #fff;
+            border-bottom: 1px solid #dee2e6;
+            z-index: 1000;
+        }
+
+        /* Main Content */
+        .erp-content {
+            margin-left: 240px;
+            margin-top: 70px;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="erp-sidebar">
+        <a asp-controller="Dashboard" asp-action="Index">🏠 Dashboard</a>
+        <a asp-controller="Inventory" asp-action="Index"
+           class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Inventory" ? "active" : "")">
+            📦 Inventory
+        </a>
+        <a asp-controller="Purchase" asp-action="Index"
+           class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Purchase" ? "active" : "")">
+            🧾 Purchase
+        </a>
+        <a asp-controller="Orders" asp-action="Index"
+           class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" ? "active" : "")">
+            💰 Sales
+        </a>
+    </div>
+
+    <!-- Top Navbar -->
+    <nav class="navbar erp-navbar shadow-sm px-3">
+        <span class="navbar-brand mb-0 h5">ERP System</span>
+
+        <div class="ms-auto">
+            <span class="me-3">Hello, @User.Identity?.Name</span>
+            <a class="btn btn-outline-danger btn-sm" asp-controller="Account" asp-action="Logout">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="erp-content">
+        @RenderBody()
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

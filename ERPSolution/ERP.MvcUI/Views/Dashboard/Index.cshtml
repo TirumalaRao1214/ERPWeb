@@ -1,0 +1,130 @@
+﻿@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+    .dashboard-card {
+        border-radius: 15px;
+        padding: 25px;
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+        }
+
+    .icon {
+        font-size: 40px;
+        opacity: 0.3;
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+    }
+
+    .card-title {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .card-value {
+        font-size: 28px;
+        font-weight: 700;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <h2 class="mb-4 fw-bold">📊 ERP Analytics Dashboard</h2>
+
+    <!-- ROW 1: Stats Cards -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+            <div class="dashboard-card bg-primary position-relative">
+                <div class="card-title">Total Products</div>
+                <div class="card-value">@Model.Inventory.TotalProducts</div>
+                <i class="bi bi-box-seam icon"></i>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dashboard-card bg-success position-relative">
+                <div class="card-title">Today's Sales</div>
+                <div class="card-value">₹ @Model.Sales.TodaySales</div>
+                <i class="bi bi-currency-rupee icon"></i>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dashboard-card bg-danger position-relative">
+                <div class="card-title">Pending GRN</div>
+                <div class="card-value">@Model.Purchase.PendingGRN</div>
+                <i class="bi bi-exclamation-octagon icon"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ROW 2: Top Selling Products Chart -->
+    <div class="mt-5">
+        <h3 class="fw-bold mb-3">🔥 Top Selling Products</h3>
+
+        <div class="card p-4 shadow-sm">
+            <canvas id="topSellingChart" height="100"></canvas>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Bind top-selling product names to labels
+    const labels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                Model.Sales.BestSellingProducts.Select(x => x.ProductName))
+        );
+
+    // Bind quantity sold values
+    const values = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                Model.Sales.BestSellingProducts.Select(x => x.QuantitySold))
+        );
+
+    const ctx = document.getElementById('topSellingChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Quantity Sold',
+                data: values,
+                borderWidth: 1,
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(255, 159, 64, 0.7)',
+                    'rgba(153, 102, 255, 0.7)',
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)'
+                ],
+                borderColor: '#333',
+                hoverBackgroundColor: '#000'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
